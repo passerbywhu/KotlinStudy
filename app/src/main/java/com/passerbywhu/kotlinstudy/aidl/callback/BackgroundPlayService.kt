@@ -29,6 +29,11 @@ class BackgroundPlayService : Service() {
         }
     }
 
+    override fun onDestroy() {
+        super.onDestroy()
+        callbacks.kill()
+    }
+
     override fun onBind(intent: Intent?): IBinder {
         return object : BackgroundPlayerInterface.Stub() {
             override fun registerCallback(listener: PlayEventInterface?) {

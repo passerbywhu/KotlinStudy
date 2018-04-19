@@ -16,6 +16,14 @@ import kotlinx.android.synthetic.main.play_activity.*
 class PlayActivity : AppCompatActivity() {
     val preparedPlayList = listOf("song1", "song2", "song3", "song4")
     var playServiceProxy : BackgroundPlayerInterface? = null
+    val deathRecipient = object : IBinder.DeathRecipient {
+        override fun binderDied() {
+            playServiceProxy?.asBinder()?.unlinkToDeath(this, 0)
+            playServiceProxy = null
+            //重新绑定Service
+        }
+
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -34,6 +42,7 @@ class PlayActivity : AppCompatActivity() {
                     }
 
                 })
+                service?.linkToDeath(deathRecipient, 0)
             }
 
         }, Service.BIND_AUTO_CREATE)
