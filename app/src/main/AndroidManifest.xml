@@ -14,7 +14,7 @@
         <activity android:name=".MainActivity">
 
         </activity>
-        <activity android:name=".aidl.callback.PlayActivity">
+        <activity android:name=".ipc.aidl.AIDLPlayActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -22,7 +22,7 @@
             </intent-filter>
         </activity>
 
-        <service android:name=".aidl.callback.BackgroundPlayService"
+        <service android:name=".ipc.aidl.AIDLPlayService"
             android:process=":play"
             />
     </application>

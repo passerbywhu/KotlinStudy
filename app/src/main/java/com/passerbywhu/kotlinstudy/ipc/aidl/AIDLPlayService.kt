@@ -1,4 +1,4 @@
-package com.passerbywhu.kotlinstudy.aidl.callback
+package com.passerbywhu.kotlinstudy.ipc.aidl
 
 import android.app.Service
 import android.content.Intent
@@ -6,12 +6,13 @@ import android.os.IBinder
 import android.os.RemoteCallbackList
 import com.passerbywhu.kotlinstudy.aidl.PlayEventInterface
 import com.passerbywhu.kotlinstudy.aidl.BackgroundPlayerInterface
+import com.passerbywhu.kotlinstudy.ipc.TrackInfo
 import java.util.*
 import kotlin.concurrent.timer
 
-class BackgroundPlayService : Service() {
+class AIDLPlayService : Service() {
     val callbacks: RemoteCallbackList<PlayEventInterface> = RemoteCallbackList()
-    val outPlayList = ArrayList<String>()
+    val outPlayList = ArrayList<TrackInfo>()
     var currentIndex = 0
     var changeSongTimer : Timer? = null
 
@@ -22,7 +23,7 @@ class BackgroundPlayService : Service() {
                 currentIndex = (currentIndex + 1) % outPlayList.size
                 val callbackNum = callbacks.beginBroadcast()
                 for(i in 0 until callbackNum) {
-                    callbacks.getBroadcastItem(i).songChanged(outPlayList[currentIndex])
+                    callbacks.getBroadcastItem(i).songChanged(outPlayList[currentIndex].name)
                 }
                 callbacks.finishBroadcast()
             }
@@ -48,28 +49,33 @@ class BackgroundPlayService : Service() {
                 }
             }
 
-            override fun getCurrentSong(): String {
-                return if (outPlayList.isEmpty()) "No information" else outPlayList[currentIndex]
+            override fun getCurrentSong(): TrackInfo {
+                return if (outPlayList.isEmpty()) TrackInfo("No information") else outPlayList[currentIndex]
             }
 
-            override fun playNext() {
-                if (!outPlayList.isEmpty()) {
+            override fun playNext() : TrackInfo? {
+                return if (!outPlayList.isEmpty()) {
                     currentIndex = (currentIndex + 1) % outPlayList.size
+                    outPlayList[currentIndex]
+                } else {
+                    null
                 }
+
             }
 
-            override fun playPre() {
-                if (!outPlayList.isEmpty()) {
+            override fun playPre() : TrackInfo? {
+                return if (!outPlayList.isEmpty()) {
                     currentIndex = (currentIndex - 1 + outPlayList.size) % outPlayList.size
-                }
+                    outPlayList[currentIndex]
+                } else null
             }
 
-            override fun setPlayList(playList_: MutableList<String>?) {
+            override fun setPlayList(playList_: MutableList<TrackInfo>?) {
                 outPlayList.clear()
-                outPlayList.addAll(playList_ as List<String>)
+                outPlayList.addAll(playList_ as List<TrackInfo>)
             }
 
-            override fun getPlayList(): MutableList<String> {
+            override fun getPlayList(): MutableList<TrackInfo> {
                 return outPlayList
             }
 

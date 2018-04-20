@@ -1,4 +1,4 @@
-package com.passerbywhu.kotlinstudy.aidl.callback
+package com.passerbywhu.kotlinstudy.ipc.aidl
 
 import android.app.Service
 import android.content.ComponentName
@@ -11,10 +11,11 @@ import android.view.View
 import com.passerbywhu.kotlinstudy.R
 import com.passerbywhu.kotlinstudy.aidl.BackgroundPlayerInterface
 import com.passerbywhu.kotlinstudy.aidl.PlayEventInterface
+import com.passerbywhu.kotlinstudy.ipc.TrackInfo
 import kotlinx.android.synthetic.main.play_activity.*
 
-class PlayActivity : AppCompatActivity() {
-    val preparedPlayList = listOf("song1", "song2", "song3", "song4")
+class AIDLPlayActivity : AppCompatActivity() {
+    val preparedPlayList = listOf(TrackInfo("song1"), TrackInfo("song2"), TrackInfo("song3"), TrackInfo("song4"))
     var playServiceProxy : BackgroundPlayerInterface? = null
     val deathRecipient = object : IBinder.DeathRecipient {
         override fun binderDied() {
@@ -28,7 +29,7 @@ class PlayActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.play_activity)
-        val intent = Intent(this, BackgroundPlayService::class.java)
+        val intent = Intent(this, AIDLPlayService::class.java)
         bindService(intent, object : ServiceConnection {
             override fun onServiceDisconnected(name: ComponentName?) {
             }
@@ -49,15 +50,15 @@ class PlayActivity : AppCompatActivity() {
         prev.setOnClickListener(object: View.OnClickListener {
             override fun onClick(v: View?) {
                 playServiceProxy?.playPre()
-                show.text = playServiceProxy?.currentSong?:"No Information"
+                show.text = playServiceProxy?.currentSong?.name?:"No Information"
             }
         })
         next.setOnClickListener{
             playServiceProxy?.playNext()
-            show.text = playServiceProxy?.currentSong?:"No Information"
+            show.text = playServiceProxy?.currentSong?.name?:"No Information"
         }
         current.setOnClickListener{
-            show.text = playServiceProxy?.currentSong?:"No Information"
+            show.text = playServiceProxy?.currentSong?.name?:"No Information"
         }
     }
 }
