@@ -1,4 +1,4 @@
-package com.passerbywhu.kotlinstudy
+package com.passerbywhu.kotlinstudy.forecast
 
 import android.util.Log
 import java.net.URL
